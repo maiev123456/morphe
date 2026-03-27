@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from "react-router-dom";
 import emailjs from "@emailjs/browser";
 import { MorphingCardStack, type CardData } from "./components/ui/morphing-card-stack";
@@ -8,70 +8,70 @@ import { LandingAccordionItem } from "./components/ui/interactive-image-accordio
 import { InteractiveBentoGallery, MediaItemType } from "./components/ui/interactive-bento-gallery";
 import { WavePath } from "./components/ui/wave-path";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
-import guardianImageUrl from "../images/guardian_image.png";
-import lumaImageUrl from "../images/luma_image.png";
-import propeaseImageUrl from "../images/propease_image.jpg";
-import amoreImageUrl from "../images/amore_image.png";
-import otherImageUrl from "../images/other_image.PNG";
-import morpheLogoBigUrl from "../images/morphe_logo_big.PNG";
-/** Home card icons — served from `public/images/` so the browser always loads the right file */
+import guardianImageUrl from "./images/guardian_image.png";
+import lumaImageUrl from "./images/luma_image.png";
+import propeaseImageUrl from "./images/propease_image.jpg";
+import amoreImageUrl from "./images/amore_image.png";
+import otherImageUrl from "./images/other_image.png";
+import morpheLogoBigUrl from "./images/morphe_logo_big.png";
+import morpheLogoIconUrl from "./images/morphe_logo_icon.png";
+import iconProjectsUrl from "./images/icon_projects.svg";
+import iconDesignApproachUrl from "./images/icon_design_approach.svg";
+import iconContactUrl from "./images/icon_contact.svg";
+import logoVideoUrl from "./images/logo_video.mp4";
+
+/** Home card icons — loaded from src/images */
 const HOME_ICON = {
-  morphe: "/images/morphe_logo_icon.PNG?v=2",
-  projects: "/images/icon_projects.svg?v=3",
-  designApproach: "/images/icon_design_approach.svg?v=3",
-  contact: "/images/icon_contact.svg?v=3",
+  morphe: morpheLogoIconUrl,
+  projects: iconProjectsUrl,
+  designApproach: iconDesignApproachUrl,
+  contact: iconContactUrl,
 } as const;
 
 // Auto-load Guardian detail images from `images/guardian_images/*`
 // Files are sorted by name so you can control order via filenames.
-const GUARDIAN_DETAIL_IMAGES = Object.entries(
-  import.meta.glob("../images/guardian_images/*.{png,jpg,jpeg,webp,svg,PNG,JPG,JPEG,WEBP,SVG}", {
-    eager: true,
-    import: "default",
-  }) as Record<string, string>,
-)
-  .sort(([pathA], [pathB]) => pathA.localeCompare(pathB))
-  .map(([, url]) => url);
+const resolveGlobUrls = (modules: Record<string, unknown>) =>
+  Object.entries(modules)
+    .sort(([pathA], [pathB]) => pathA.localeCompare(pathB))
+    .map(([, mod]) =>
+      typeof mod === "string"
+        ? mod
+        : (mod as { default?: string })?.default ?? "",
+    )
+    .filter(Boolean);
 
-const LUMA_DETAIL_IMAGES = Object.entries(
-  import.meta.glob("../images/luma_images/*.{png,jpg,jpeg,webp,svg,PNG,JPG,JPEG,WEBP,SVG}", {
+const GUARDIAN_DETAIL_IMAGES = resolveGlobUrls(
+  import.meta.glob("./images/guardian_images/*.{png,jpg,jpeg,webp,svg,PNG,JPG,JPEG,WEBP,SVG}", {
     eager: true,
-    import: "default",
-  }) as Record<string, string>,
-)
-  .sort(([pathA], [pathB]) => pathA.localeCompare(pathB))
-  .map(([, url]) => url);
+  }) as Record<string, unknown>,
+);
 
-const AMORE_DETAIL_IMAGES = Object.entries({
-  ...(import.meta.glob("../images/amore_images/*.{png,jpg,jpeg,webp,svg,PNG,JPG,JPEG,WEBP,SVG}", {
+const LUMA_DETAIL_IMAGES = resolveGlobUrls(
+  import.meta.glob("./images/luma_images/*.{png,jpg,jpeg,webp,svg,PNG,JPG,JPEG,WEBP,SVG}", {
     eager: true,
-    import: "default",
-  }) as Record<string, string>),
-  ...(import.meta.glob("../images/amore_pet_food_images/*.{png,jpg,jpeg,webp,svg,PNG,JPG,JPEG,WEBP,SVG}", {
-    eager: true,
-    import: "default",
-  }) as Record<string, string>),
-})
-  .sort(([pathA], [pathB]) => pathA.localeCompare(pathB))
-  .map(([, url]) => url);
+  }) as Record<string, unknown>,
+);
 
-const PROPEASE_DETAIL_IMAGES = Object.entries(
-  import.meta.glob("../images/propease_images/*.{png,jpg,jpeg,webp,svg,PNG,JPG,JPEG,WEBP,SVG}", {
+const AMORE_DETAIL_IMAGES = resolveGlobUrls({
+  ...(import.meta.glob("./images/amore_images/*.{png,jpg,jpeg,webp,svg,PNG,JPG,JPEG,WEBP,SVG}", {
     eager: true,
-    import: "default",
-  }) as Record<string, string>,
-)
-  .sort(([pathA], [pathB]) => pathA.localeCompare(pathB))
-  .map(([, url]) => url);
+  }) as Record<string, unknown>),
+  ...(import.meta.glob("./images/amore_pet_food_images/*.{png,jpg,jpeg,webp,svg,PNG,JPG,JPEG,WEBP,SVG}", {
+    eager: true,
+  }) as Record<string, unknown>),
+});
 
-const OTHER_DETAIL_IMAGES = Object.entries(
-  import.meta.glob("../images/other_images/*.{png,jpg,jpeg,webp,svg,PNG,JPG,JPEG,WEBP,SVG}", {
+const PROPEASE_DETAIL_IMAGES = resolveGlobUrls(
+  import.meta.glob("./images/propease_images/*.{png,jpg,jpeg,webp,svg,PNG,JPG,JPEG,WEBP,SVG}", {
     eager: true,
-    import: "default",
-  }) as Record<string, string>,
-)
-  .sort(([pathA], [pathB]) => pathA.localeCompare(pathB))
-  .map(([, url]) => url);
+  }) as Record<string, unknown>,
+);
+
+const OTHER_DETAIL_IMAGES = resolveGlobUrls(
+  import.meta.glob("./images/other_images/*.{png,jpg,jpeg,webp,svg,PNG,JPG,JPEG,WEBP,SVG}", {
+    eager: true,
+  }) as Record<string, unknown>,
+);
 
 const guardianDetailImageAt = (index: number, fallbackUrl: string) =>
   GUARDIAN_DETAIL_IMAGES[index] ?? fallbackUrl;
@@ -330,6 +330,33 @@ const cardData: Array<CardData & { path: string }> = [
 
 function Home() {
   const navigate = useNavigate();
+  const [showIntro, setShowIntro] = useState(true);
+  const [videoReady, setVideoReady] = useState(false);
+  const introVideoRef = useRef<HTMLVideoElement>(null);
+
+  const closeIntro = () => {
+    setShowIntro(false);
+  };
+
+  useEffect(() => {
+    if (!showIntro || !introVideoRef.current) return;
+    const video = introVideoRef.current;
+    video.play().catch(() => {
+      // If autoplay is blocked or source fails, don't trap user behind overlay.
+      setTimeout(() => {
+        setShowIntro(false);
+      }, 1200);
+    });
+  }, [showIntro]);
+
+  useEffect(() => {
+    if (!showIntro) return;
+    const fallbackTimeout = window.setTimeout(() => {
+      if (!videoReady) setShowIntro(false);
+    }, 2500);
+    return () => window.clearTimeout(fallbackTimeout);
+  }, [showIntro, videoReady]);
+
   return (
     <main
       className="min-h-screen w-full flex items-center justify-center bg-white relative overflow-hidden p-4"
@@ -349,6 +376,37 @@ function Home() {
       <div className="w-full max-w-md relative z-10">
         <MorphingCardStack cards={cardData} onCardClick={(card) => navigate(card.path as string)} />
       </div>
+      {showIntro && (
+        <div
+          className="fixed inset-0 z-[200] bg-black flex items-center justify-center"
+          onClick={() => {
+            introVideoRef.current?.play().catch(() => {});
+          }}
+        >
+          <video
+            ref={introVideoRef}
+            className="w-full h-full object-contain"
+            src={logoVideoUrl}
+            autoPlay
+            muted
+            playsInline
+            preload="auto"
+            onLoadedData={() => setVideoReady(true)}
+            onError={() => setShowIntro(false)}
+            onEnded={closeIntro}
+          />
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              closeIntro();
+            }}
+            className="absolute top-6 right-6 rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30 transition-colors"
+          >
+            Skip
+          </button>
+        </div>
+      )}
     </main>
   );
 }

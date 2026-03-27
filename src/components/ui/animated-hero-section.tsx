@@ -10,7 +10,6 @@ const BACKGROUND_COLOR = "#FFFFFF"
 const BALL_COLOR = "#232731"
 const PADDLE_COLOR = "#232731"
 const LETTER_SPACING = 1
-const WORD_SPACING = 3
 
 const PIXEL_MAP = {
   P: [
@@ -183,7 +182,6 @@ export function AnimatedHeroSection() {
     const initializeGame = () => {
       const scale = scaleRef.current
       const LARGE_PIXEL_SIZE = 8 * scale
-      const SMALL_PIXEL_SIZE = 4 * scale
       const BALL_SPEED = 2.5 * scale // Hız düşürüldü (6'dan 2.5'e)
 
       pixelsRef.current = []
@@ -210,7 +208,7 @@ export function AnimatedHeroSection() {
 
       let startY = (canvas.height - totalTextHeight) / 2
 
-      words.forEach((word, wordIndex) => {
+      words.forEach((word) => {
         const pixelSize = adjustedLargePixelSize
         const totalWidth = calculateWordWidth(word, pixelSize)
 

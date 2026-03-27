@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import guardianImageUrl from '../../../images/guardian_image.png';
-import lumaImageUrl from '../../../images/luma_image.png';
-import propeaseImageUrl from '../../../images/propease_image.jpg';
-import amoreImageUrl from '../../../images/amore_image.png';
-import otherImageUrl from '../../../images/other_image.PNG';
+import guardianImageUrl from '../../images/guardian_image.png';
+import lumaImageUrl from '../../images/luma_image.png';
+import propeaseImageUrl from '../../images/propease_image.jpg';
+import amoreImageUrl from '../../images/amore_image.png';
+import otherImageUrl from '../../images/other_image.png';
 
 // --- Data for the image accordion ---
 const accordionItems = [

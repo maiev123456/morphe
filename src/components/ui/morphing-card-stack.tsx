@@ -16,6 +16,7 @@ export interface CardData {
   id: string;
   title: string;
   description: string;
+  path: string;
   icon?: ReactNode;
   color?: string;
   /** When true, icon area has no inner padding; image children fill the full h-10 w-10 box */
